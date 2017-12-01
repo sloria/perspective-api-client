@@ -1,19 +1,19 @@
-# perspective-client 
+# perspective-api-client 
 
-[![Build Status](https://travis-ci.org/sloria/perspective-client.svg?branch=master)](https://travis-ci.org/sloria/perspective-client)
+[![Build Status](https://travis-ci.org/sloria/perspective-api-client.svg?branch=master)](https://travis-ci.org/sloria/perspective-api-client)
 
 NodeJS client library for the [Perspective API](https://www.perspectiveapi.com/).
 
 ## Install
 
 ```
-$ npm install perspective-client
+$ npm install perspective-api-client
 ```
 
 ## Usage
 
 ```js
-const Perspective = require('perspective-client');
+const Perspective = require('perspective-api-client');
 const perspective = new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY});
 
 (async () => {
