@@ -12,18 +12,19 @@ class Perspective {
     }
     this._client = null;
   }
-  analyze(text, options = {}) {
+  analyze(text, options) {
+    const opts = options || {};
     let resource = {};
     if (typeof text === 'object') {
       resource = text;
     } else {
       resource.comment = {text};
     }
-    let attributes = options.attributes == undefined && !resource.requestedAttributes ? {TOXICITY: {}} : options.attributes;
-    const doNotStore = options.doNotStore == undefined ? false : options.doNotStore;
-    if (Array.isArray(options.attributes)) {
+    let attributes = opts.attributes == undefined && !resource.requestedAttributes ? {TOXICITY: {}} : opts.attributes;
+    const doNotStore = opts.doNotStore == undefined ? false : opts.doNotStore;
+    if (Array.isArray(opts.attributes)) {
       attributes = {};
-      options.attributes.forEach(each => {
+      opts.attributes.forEach(each => {
         attributes[each.toUpperCase()] = {};
       });
     }

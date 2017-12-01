@@ -21,7 +21,8 @@
     "index.js"
   ],
   "keywords": [
-    ""
+    "perspective",
+    "perspective-api"
   ],
   "dependencies": {
     "googleapis": "^23.0.0",
