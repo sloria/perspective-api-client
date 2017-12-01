@@ -1,0 +1,40 @@
+{
+  "name": "perspective-client",
+  "version": "0.0.0",
+  "description": "Client library for the Perspective API",
+  "license": "MIT",
+  "repository": "sloria/perspective-client",
+  "author": {
+    "name": "Steven Loria",
+    "email": "sloria1@gmail.com",
+    "url": "stevenloria.com"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "test": "npm run lint && ava",
+    "lint": "xo"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    ""
+  ],
+  "dependencies": {
+    "googleapis": "^23.0.0",
+    "lodash.merge": "^4.6.0"
+  },
+  "devDependencies": {
+    "ava": "^0.24.0",
+    "sinon": "^4.1.2",
+    "xo": "^0.18.2"
+  },
+  "xo": {
+    "space": true,
+    "rules": {
+      "eqeqeq": 0
+    }
+  }
+}
