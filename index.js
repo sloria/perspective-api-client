@@ -22,7 +22,9 @@ class Perspective {
       resource.comment = {text};
     }
     let attributes =
-      opts.attributes == undefined && !resource.requestedAttributes ? {TOXICITY: {}} : opts.attributes;
+      opts.attributes == undefined && !resource.requestedAttributes
+        ? {TOXICITY: {}}
+        : opts.attributes;
     const doNotStore = opts.doNotStore == undefined ? false : opts.doNotStore;
     if (Array.isArray(opts.attributes)) {
       attributes = {};
@@ -36,6 +38,7 @@ class Perspective {
     });
     return new Promise((resolve, reject) => {
       this._getClient().then(client => {
+        // prettier-ignore
         client.comments.analyze(
           {key: this.options.apiKey, resource},
           (err, response) => {

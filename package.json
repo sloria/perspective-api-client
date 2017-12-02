@@ -38,6 +38,8 @@
     "space": true,
     "rules": {
       "eqeqeq": 0,
+      "capitalized-comments": 0,
+      "operator-linebreak": 0,
       "comma-dangle": [
         "error",
         {
