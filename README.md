@@ -1,5 +1,6 @@
 # perspective-api-client
 
+[![Current Version](https://img.shields.io/npm/v/perspective-api-client.svg)](https://www.npmjs.org/package/perspective-api-client)
 [![Build Status](https://travis-ci.org/sloria/perspective-api-client.svg?branch=master)](https://travis-ci.org/sloria/perspective-api-client)
 [![Greenkeeper badge](https://badges.greenkeeper.io/sloria/perspective-api-client.svg)](https://greenkeeper.io/)
 
@@ -19,7 +20,7 @@ const perspective = new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY});
 
 (async () => {
   const text = 'What kind of idiot name is foo? Sorry, I like your name.';
-  const result = await perspective.analyze(text, {doNotStore: true});
+  const result = await perspective.analyze(text);
   console.log(JSON.stringify(result, null, 2));
 })();
 // {
@@ -55,7 +56,7 @@ The TOXICITY model is used by default. To specify additional models,
 ```js
 (async () => {
   const text = 'What kind of idiot name is foo? Sorry, I like your name.';
-  const result = await perspective.analyze(text, {attributes: ['toxicity', 'unsubstantial'], doNotStore: true});
+  const result = await perspective.analyze(text, {attributes: ['toxicity', 'unsubstantial']});
   console.log(JSON.stringify(result, null, 2));
 })();
 // {
@@ -160,9 +161,9 @@ for a list of valid models.
 ###### doNotStore
 
 Type: `Boolean`
-Default: `false`
+Default: `true`
 
-Whether the API is permitted to store comment and context from this request.
+If `true`, prevent API from storing comment and context from this request.
 
 ##### stripHTML
 

@@ -47,7 +47,7 @@ class Perspective {
       opts.attributes == undefined && !resource.requestedAttributes
         ? {TOXICITY: {}}
         : opts.attributes;
-    const doNotStore = opts.doNotStore == undefined ? false : opts.doNotStore;
+    const doNotStore = opts.doNotStore == undefined ? true : opts.doNotStore;
     if (Array.isArray(opts.attributes)) {
       attributes = {};
       opts.attributes.forEach(each => {

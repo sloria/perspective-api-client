@@ -64,6 +64,12 @@ test('stripHTML false', t => {
   t.is(resource.comment.text, '<p>good test</p>');
 });
 
+test('doNotStore is true by default', t => {
+  const p = createPerspective();
+  const resource = p._makeResource('good test');
+  t.true(resource.doNotStore);
+});
+
 if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
   test('integration:analyze', async t => {
     const p = createPerspective();
