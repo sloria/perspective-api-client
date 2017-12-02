@@ -2,7 +2,8 @@
 const googleapis = require('googleapis');
 const merge = require('lodash.merge');
 
-const COMMENT_ANALYZER_DISCOVERY_URL = 'https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1';
+const COMMENT_ANALYZER_DISCOVERY_URL =
+  'https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1';
 
 class Perspective {
   constructor(options) {
@@ -20,7 +21,8 @@ class Perspective {
     } else {
       resource.comment = {text};
     }
-    let attributes = opts.attributes == undefined && !resource.requestedAttributes ? {TOXICITY: {}} : opts.attributes;
+    let attributes =
+      opts.attributes == undefined && !resource.requestedAttributes ? {TOXICITY: {}} : opts.attributes;
     const doNotStore = opts.doNotStore == undefined ? false : opts.doNotStore;
     if (Array.isArray(opts.attributes)) {
       attributes = {};
@@ -30,16 +32,19 @@ class Perspective {
     }
     merge(resource, {
       requestedAttributes: attributes,
-      doNotStore
+      doNotStore,
     });
     return new Promise((resolve, reject) => {
       this._getClient().then(client => {
-        client.comments.analyze({key: this.options.apiKey, resource}, (err, response) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(response);
-        });
+        client.comments.analyze(
+          {key: this.options.apiKey, resource},
+          (err, response) => {
+            if (err) {
+              reject(err);
+            }
+            resolve(response);
+          },
+        );
       }, reject);
     });
   }
@@ -65,7 +70,6 @@ class Perspective {
       });
     });
   }
-
 }
 
 module.exports = Perspective;

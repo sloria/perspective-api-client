@@ -15,19 +15,17 @@ const DEFAULT_RESPONSE = {
           end: 56,
           score: {
             value: 0.8728314,
-            type: 'PROBABILITY'
-          }
-        }
+            type: 'PROBABILITY',
+          },
+        },
       ],
       summaryScore: {
         value: 0.8728314,
-        type: 'PROBABILITY'
-      }
-    }
+        type: 'PROBABILITY',
+      },
+    },
   },
-  languages: [
-    'en'
-  ]
+  languages: ['en'],
 };
 
 const createMockedPerspective = (response = DEFAULT_RESPONSE) => {
@@ -37,14 +35,15 @@ const createMockedPerspective = (response = DEFAULT_RESPONSE) => {
       comments: {
         analyze(options, callback) {
           callback(null, response);
-        }
-      }
+        },
+      },
     });
   });
   return p;
 };
 
-const createPerspective = () => new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY});
+const createPerspective = () =>
+  new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY});
 
 test('analyze', async t => {
   const p = createMockedPerspective();
@@ -55,7 +54,9 @@ test('analyze', async t => {
 if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
   test('integration:analyze', async t => {
     const p = createPerspective();
-    const result = await p.analyze('testing is for dummies', {doNotStore: true});
+    const result = await p.analyze('testing is for dummies', {
+      doNotStore: true,
+    });
     t.log(JSON.stringify(result, null, 2));
     t.truthy(result);
     t.truthy(result.attributeScores.TOXICITY);
@@ -63,7 +64,10 @@ if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
 
   test('integration:analyze with attributes passed as array', async t => {
     const p = createPerspective();
-    const result = await p.analyze('jolly good tests', {attributes: ['unsubstantial', 'spam'], doNotStore: true});
+    const result = await p.analyze('jolly good tests', {
+      attributes: ['unsubstantial', 'spam'],
+      doNotStore: true,
+    });
     t.log(JSON.stringify(result, null, 2));
     t.truthy(result);
     t.falsy(result.attributeScores.TOXICITY);
@@ -77,10 +81,10 @@ if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
       comment: {text: 'hooray for tests'},
       requestedAttributes: {
         UNSUBSTANTIAL: {},
-        SPAM: {}
+        SPAM: {},
       },
       clientToken: 'test',
-      doNotStore: true
+      doNotStore: true,
     });
     t.log(JSON.stringify(result, null, 2));
     t.truthy(result);
