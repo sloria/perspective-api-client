@@ -172,6 +172,21 @@ Default: `true`
 
 Whether to strip HTML tags from the text.
 
+## FAQ
+
+### How does this compare to @conversationai/perspectiveapi-js-client?
+
+Similarities:
+
+- Exposes the AnalyzeComment endpoint of the Perspective API
+- Strips HTML tags by default
+
+Differences:
+
+
+- Returns full responses (rather than only returning summary scores)
+- Exposes all [AnalyzeComment](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-request) options
+
 ## License
 
 MIT © [Steven Loria](http://stevenloria.com)
