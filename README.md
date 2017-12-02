@@ -1,8 +1,7 @@
 # perspective-api-client 
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/sloria/perspective-api-client.svg)](https://greenkeeper.io/)
-
 [![Build Status](https://travis-ci.org/sloria/perspective-api-client.svg?branch=master)](https://travis-ci.org/sloria/perspective-api-client)
+[![Greenkeeper badge](https://badges.greenkeeper.io/sloria/perspective-api-client.svg)](https://greenkeeper.io/)
 
 NodeJS client library for the [Perspective API](https://www.perspectiveapi.com/).
 
