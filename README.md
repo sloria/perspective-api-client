@@ -172,6 +172,14 @@ Default: `true`
 
 Whether to strip HTML tags from the text.
 
+##### truncate
+
+Type: `Boolean`
+Default: `false`
+
+If `true`, truncate text to the first 3000 characters (max length
+    allowed by the Perspective API).
+
 ## FAQ
 
 ### How does this compare to @conversationai/perspectiveapi-js-client?
@@ -186,6 +194,7 @@ Differences:
 
 - Returns full responses (rather than only returning summary scores)
 - Exposes all [AnalyzeComment](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-request) options
+- Supports all NodeJS LTS versions
 
 ## License
 

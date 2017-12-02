@@ -5,6 +5,7 @@ const merge = require('lodash.merge');
 
 const COMMENT_ANALYZER_DISCOVERY_URL =
   'https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1';
+const MAX_LENGTH = 3000;
 
 class Perspective {
   constructor(options) {
@@ -15,7 +16,7 @@ class Perspective {
     this._client = null;
   }
   analyze(text, options) {
-    const resource = this._makeResource(text, options);
+    const resource = this.makeResource(text, options);
     return new Promise((resolve, reject) => {
       this._getClient().then(client => {
         // prettier-ignore
@@ -31,23 +32,28 @@ class Perspective {
       }, reject);
     });
   }
-  _makeResource(text, options) {
+  makeResource(text, options) {
     const opts = options || {};
     const stripHTML = opts.stripHTML == undefined ? true : opts.stripHTML;
+    const truncate = opts.truncate == undefined ? false : opts.truncate;
+    const doNotStore = opts.doNotStore == undefined ? true : opts.doNotStore;
+    const processText = str => {
+      const ret = stripHTML ? striptags(str) : str;
+      return truncate ? ret.substr(0, MAX_LENGTH) : ret;
+    };
     let resource = {};
     if (typeof text === 'object') {
       resource = text;
       if (stripHTML && resource.comment.text) {
-        resource.comment.text = striptags(resource.comment.text);
+        resource.comment.text = processText(resource.comment.text);
       }
     } else {
-      resource.comment = {text: stripHTML ? striptags(text) : text};
+      resource.comment = {text: processText(text)};
     }
     let attributes =
       opts.attributes == undefined && !resource.requestedAttributes
         ? {TOXICITY: {}}
         : opts.attributes;
-    const doNotStore = opts.doNotStore == undefined ? true : opts.doNotStore;
     if (Array.isArray(opts.attributes)) {
       attributes = {};
       opts.attributes.forEach(each => {

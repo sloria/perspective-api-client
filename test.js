@@ -54,20 +54,32 @@ test('analyze', async t => {
 
 test('strips tags by default', t => {
   const p = createPerspective();
-  const resource = p._makeResource('<p>good test</p>');
+  const resource = p.makeResource('<p>good test</p>');
   t.is(resource.comment.text, 'good test');
 });
 
 test('stripHTML false', t => {
   const p = createPerspective();
-  const resource = p._makeResource('<p>good test</p>', {stripHTML: false});
+  const resource = p.makeResource('<p>good test</p>', {stripHTML: false});
   t.is(resource.comment.text, '<p>good test</p>');
 });
 
 test('doNotStore is true by default', t => {
   const p = createPerspective();
-  const resource = p._makeResource('good test');
+  const resource = p.makeResource('good test');
   t.true(resource.doNotStore);
+});
+
+test('truncate', t => {
+  const p = createPerspective();
+  const text = repeat('x', 3001);
+  // doesn't truncate by default
+  const truncatedDefault = p.makeResource(text);
+  t.is(truncatedDefault.comment.text, text);
+  const truncated = p.makeResource(text, {truncate: true});
+  t.is(truncated.comment.text, repeat('x', 3000));
+  const notTruncated = p.makeResource(text, {truncate: false});
+  t.is(notTruncated.comment.text, text);
 });
 
 if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
