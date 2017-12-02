@@ -43,7 +43,7 @@ class Perspective {
               reject(err);
             }
             resolve(response);
-          },
+          }  // eslint-disable-line comma-dangle
         );
       }, reject);
     });
