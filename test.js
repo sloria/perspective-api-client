@@ -1,4 +1,5 @@
 import test from 'ava';
+import repeat from 'lodash.repeat';
 import sinon from 'sinon';
 import Perspective from '.';
 
@@ -51,6 +52,18 @@ test('analyze', async t => {
   t.is(result, DEFAULT_RESPONSE);
 });
 
+test('strips tags by default', t => {
+  const p = createPerspective();
+  const resource = p._makeResource('<p>good test</p>');
+  t.is(resource.comment.text, 'good test');
+});
+
+test('stripHTML false', t => {
+  const p = createPerspective();
+  const resource = p._makeResource('<p>good test</p>', {stripHTML: false});
+  t.is(resource.comment.text, '<p>good test</p>');
+});
+
 if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
   test('integration:analyze', async t => {
     const p = createPerspective();
@@ -92,5 +105,11 @@ if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
     t.truthy(result.attributeScores.UNSUBSTANTIAL);
     t.truthy(result.attributeScores.SPAM);
     t.is(result.clientToken, 'test');
+  });
+
+  test('integration: text with > 3000 characters', async t => {
+    const p = createPerspective();
+    const text = repeat('x', 3001);
+    await t.throws(p.analyze(text, {doNotStore: true}), Error);
   });
 }

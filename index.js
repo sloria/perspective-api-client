@@ -1,5 +1,6 @@
 'use strict';
 const googleapis = require('googleapis');
+const striptags = require('striptags');
 const merge = require('lodash.merge');
 
 const COMMENT_ANALYZER_DISCOVERY_URL =
@@ -14,28 +15,7 @@ class Perspective {
     this._client = null;
   }
   analyze(text, options) {
-    const opts = options || {};
-    let resource = {};
-    if (typeof text === 'object') {
-      resource = text;
-    } else {
-      resource.comment = {text};
-    }
-    let attributes =
-      opts.attributes == undefined && !resource.requestedAttributes
-        ? {TOXICITY: {}}
-        : opts.attributes;
-    const doNotStore = opts.doNotStore == undefined ? false : opts.doNotStore;
-    if (Array.isArray(opts.attributes)) {
-      attributes = {};
-      opts.attributes.forEach(each => {
-        attributes[each.toUpperCase()] = {};
-      });
-    }
-    merge(resource, {
-      requestedAttributes: attributes,
-      doNotStore,
-    });
+    const resource = this._makeResource(text, options);
     return new Promise((resolve, reject) => {
       this._getClient().then(client => {
         // prettier-ignore
@@ -49,6 +29,34 @@ class Perspective {
           }  // eslint-disable-line comma-dangle
         );
       }, reject);
+    });
+  }
+  _makeResource(text, options) {
+    const opts = options || {};
+    const stripHTML = opts.stripHTML == undefined ? true : opts.stripHTML;
+    let resource = {};
+    if (typeof text === 'object') {
+      resource = text;
+      if (stripHTML && resource.comment.text) {
+        resource.comment.text = striptags(resource.comment.text);
+      }
+    } else {
+      resource.comment = {text: stripHTML ? striptags(text) : text};
+    }
+    let attributes =
+      opts.attributes == undefined && !resource.requestedAttributes
+        ? {TOXICITY: {}}
+        : opts.attributes;
+    const doNotStore = opts.doNotStore == undefined ? false : opts.doNotStore;
+    if (Array.isArray(opts.attributes)) {
+      attributes = {};
+      opts.attributes.forEach(each => {
+        attributes[each.toUpperCase()] = {};
+      });
+    }
+    return merge({}, resource, {
+      requestedAttributes: attributes,
+      doNotStore,
     });
   }
   _getClient() {

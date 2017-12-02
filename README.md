@@ -1,4 +1,4 @@
-# perspective-api-client 
+# perspective-api-client
 
 [![Build Status](https://travis-ci.org/sloria/perspective-api-client.svg?branch=master)](https://travis-ci.org/sloria/perspective-api-client)
 [![Greenkeeper badge](https://badges.greenkeeper.io/sloria/perspective-api-client.svg)](https://greenkeeper.io/)
@@ -145,6 +145,7 @@ object for more control over the request.
 Type: `String` or `Object`
 
 Either the text to analyze or an [AnalyzeComment](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-request) object.
+HTML tags will be stripped by default.
 
 ##### options
 
@@ -161,7 +162,14 @@ for a list of valid models.
 Type: `Boolean`
 Default: `false`
 
-Whether the API is permitted to store comment and context from this request. 
+Whether the API is permitted to store comment and context from this request.
+
+##### stripHTML
+
+Type: `Boolean`
+Default: `true`
+
+Whether to strip HTML tags from the text.
 
 ## License
 
