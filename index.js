@@ -3,8 +3,31 @@ const axios = require('axios');
 const striptags = require('striptags');
 const merge = require('lodash.merge');
 
-const COMMENT_ANALYZER_URL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
+const COMMENT_ANALYZER_URL =
+  'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
 const MAX_LENGTH = 3000;
+
+class PerspectiveAPIClientError extends Error {
+  constructor(message) {
+    super(message);
+    Error.captureStackTrace(this, this.constructor);
+    this.name = 'PerspectiveAPIClientError';
+  }
+}
+
+class TextEmptyError extends PerspectiveAPIClientError {
+  constructor() {
+    super('text must not be empty');
+    this.name = 'TextEmptyError';
+  }
+}
+
+class TextTooLongError extends PerspectiveAPIClientError {
+  constructor() {
+    super(`text must not be greater than ${MAX_LENGTH} characters in length`);
+    this.name = 'TextTooLongError';
+  }
+}
 
 class Perspective {
   constructor(options) {
@@ -21,11 +44,13 @@ class Perspective {
       } catch (err) {
         reject(err);
       }
-      axios.post(COMMENT_ANALYZER_URL, resource, {
-        params: {key: this.options.apiKey},
-      }).then(response => {
-        resolve(response.data);
-      }, reject);
+      axios
+        .post(COMMENT_ANALYZER_URL, resource, {
+          params: {key: this.options.apiKey},
+        })
+        .then(response => {
+          resolve(response.data);
+        }, reject);
     });
   }
   makeResource(text, options) {
@@ -36,10 +61,10 @@ class Perspective {
     const processText = str => {
       const ret = stripHTML ? striptags(str) : str;
       if (!ret) {
-        throw new Error('text is required');
+        throw new TextEmptyError();
       }
       if (!truncate && ret.length > MAX_LENGTH) {
-        throw new Error(`text must not be greater than ${MAX_LENGTH} characters in length`);
+        throw new TextTooLongError();
       }
       return truncate ? ret.substr(0, MAX_LENGTH) : ret;
     };
@@ -69,4 +94,7 @@ class Perspective {
   }
 }
 
+Perspective.PerspectiveAPIClientError = PerspectiveAPIClientError;
+Perspective.TextEmptyError = TextEmptyError;
+Perspective.TextTooLongError = TextTooLongError;
 module.exports = Perspective;

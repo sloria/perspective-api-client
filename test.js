@@ -1,7 +1,7 @@
 import test from 'ava';
 import moxios from 'moxios';
 import repeat from 'lodash.repeat';
-import Perspective from '.';
+import Perspective, {TextEmptyError, TextTooLongError} from '.';
 
 test('requires apiKey', t => {
   t.throws(() => new Perspective(), Error);
@@ -104,14 +104,18 @@ test('analyze with AnalyzeComment object passed', t => {
 
 test('text is required', t => {
   const p = createPerspective();
-  t.throws(() => p.makeResource(), Error);
-  t.throws(() => p.makeResource(''), Error);
+  const error = t.throws(() => p.makeResource(), /text must not be empty/);
+  t.true(error instanceof TextEmptyError);
+  const error2 = t.throws(() => p.makeResource(''), /text must not be empty/);
+  t.true(error2 instanceof TextEmptyError);
 });
 
 test('> 3000 characters in text is invalid', t => {
   const p = createPerspective();
   const text = repeat('x', 3001);
-  t.throws(() => p.makeResource(text), Error);
+  // prettier-ignore
+  const error = t.throws(() => p.makeResource(text), /text must not be greater than 3000 characters in length/);
+  t.true(error instanceof TextTooLongError);
 });
 
 if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
