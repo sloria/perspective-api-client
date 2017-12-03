@@ -70,14 +70,48 @@ test('doNotStore is true by default', t => {
 
 test('truncate', t => {
   const p = createPerspective();
-  const text = repeat('x', 3001);
   // doesn't truncate by default
-  const truncatedDefault = p.makeResource(text);
-  t.is(truncatedDefault.comment.text, text);
+  const text = repeat('x', 3001);
+  t.throws(() => p.makeResource(text), Error);
   const truncated = p.makeResource(text, {truncate: true});
   t.is(truncated.comment.text, repeat('x', 3000));
-  const notTruncated = p.makeResource(text, {truncate: false});
-  t.is(notTruncated.comment.text, text);
+  t.throws(() => p.makeResource(text, {truncate: false}), Error);
+});
+
+test('analyze with attributes passed as an array', t => {
+  const p = createPerspective();
+  const resource = p.makeResource('good test', {
+    attributes: ['unsubstantial', 'spam'],
+  });
+  t.truthy(resource.requestedAttributes.UNSUBSTANTIAL);
+  t.truthy(resource.requestedAttributes.SPAM);
+});
+
+test('analyze with AnalyzeComment object passed', t => {
+  const p = createPerspective();
+  const request = {
+    comment: {text: 'hooray for tests'},
+    requestedAttributes: {
+      UNSUBSTANTIAL: {},
+      SPAM: {},
+    },
+    clientToken: 'test',
+    doNotStore: true,
+  };
+  const resource = p.makeResource(request);
+  t.deepEqual(resource, request);
+});
+
+test('text is required', t => {
+  const p = createPerspective();
+  t.throws(() => p.makeResource(), Error);
+  t.throws(() => p.makeResource(''), Error);
+});
+
+test('> 3000 characters in text is invalid', t => {
+  const p = createPerspective();
+  const text = repeat('x', 3001);
+  t.throws(() => p.makeResource(text), Error);
 });
 
 if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
@@ -89,43 +123,5 @@ if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
     t.log(JSON.stringify(result, null, 2));
     t.truthy(result);
     t.truthy(result.attributeScores.TOXICITY);
-  });
-
-  test('integration:analyze with attributes passed as array', async t => {
-    const p = createPerspective();
-    const result = await p.analyze('jolly good tests', {
-      attributes: ['unsubstantial', 'spam'],
-      doNotStore: true,
-    });
-    t.log(JSON.stringify(result, null, 2));
-    t.truthy(result);
-    t.falsy(result.attributeScores.TOXICITY);
-    t.truthy(result.attributeScores.UNSUBSTANTIAL);
-    t.truthy(result.attributeScores.SPAM);
-  });
-
-  test('integration:analyze with AnalyzeComment object passed', async t => {
-    const p = createPerspective();
-    const result = await p.analyze({
-      comment: {text: 'hooray for tests'},
-      requestedAttributes: {
-        UNSUBSTANTIAL: {},
-        SPAM: {},
-      },
-      clientToken: 'test',
-      doNotStore: true,
-    });
-    t.log(JSON.stringify(result, null, 2));
-    t.truthy(result);
-    t.falsy(result.attributeScores.TOXICITY);
-    t.truthy(result.attributeScores.UNSUBSTANTIAL);
-    t.truthy(result.attributeScores.SPAM);
-    t.is(result.clientToken, 'test');
-  });
-
-  test('integration: text with > 3000 characters', async t => {
-    const p = createPerspective();
-    const text = repeat('x', 3001);
-    await t.throws(p.analyze(text, {doNotStore: true}), Error);
   });
 }
