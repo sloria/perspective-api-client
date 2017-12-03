@@ -1,10 +1,9 @@
 'use strict';
-const googleapis = require('googleapis');
+const axios = require('axios');
 const striptags = require('striptags');
 const merge = require('lodash.merge');
 
-const COMMENT_ANALYZER_DISCOVERY_URL =
-  'https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1';
+const COMMENT_ANALYZER_URL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
 const MAX_LENGTH = 3000;
 
 class Perspective {
@@ -13,22 +12,14 @@ class Perspective {
     if (!this.options.apiKey) {
       throw new Error('Must provide options.apiKey');
     }
-    this._client = null;
   }
   analyze(text, options) {
     const resource = this.makeResource(text, options);
     return new Promise((resolve, reject) => {
-      this._getClient().then(client => {
-        // prettier-ignore
-        client.comments.analyze(
-          {key: this.options.apiKey, resource},
-          (err, response) => {
-            if (err) {
-              reject(err);
-            }
-            resolve(response);
-          }  // eslint-disable-line comma-dangle
-        );
+      axios.post(COMMENT_ANALYZER_URL, resource, {
+        params: {key: this.options.apiKey},
+      }).then(response => {
+        resolve(response.data);
       }, reject);
     });
   }
@@ -63,28 +54,6 @@ class Perspective {
     return merge({}, resource, {
       requestedAttributes: attributes,
       doNotStore,
-    });
-  }
-  _getClient() {
-    return new Promise((resolve, reject) => {
-      if (this._client) {
-        resolve(this._client);
-      } else {
-        this._createGoogleClient().then(client => {
-          this._client = client;
-          resolve(client);
-        }, reject);
-      }
-    });
-  }
-  _createGoogleClient() {
-    return new Promise((resolve, reject) => {
-      googleapis.discoverAPI(COMMENT_ANALYZER_DISCOVERY_URL, (err, client) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(client);
-      });
     });
   }
 }

@@ -1,6 +1,6 @@
 import test from 'ava';
+import moxios from 'moxios';
 import repeat from 'lodash.repeat';
-import sinon from 'sinon';
 import Perspective from '.';
 
 test('requires apiKey', t => {
@@ -29,27 +29,25 @@ const DEFAULT_RESPONSE = {
   languages: ['en'],
 };
 
-const createMockedPerspective = (response = DEFAULT_RESPONSE) => {
-  const p = new Perspective({apiKey: '123abc'});
-  sinon.stub(p, '_createGoogleClient').callsFake(() => {
-    return Promise.resolve({
-      comments: {
-        analyze(options, callback) {
-          callback(null, response);
-        },
-      },
-    });
-  });
-  return p;
-};
-
 const createPerspective = () =>
-  new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY});
+  new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY || 'mock-key'});
 
-test('analyze', async t => {
-  const p = createMockedPerspective();
-  const result = await p.analyze('testing is for dummies');
-  t.is(result, DEFAULT_RESPONSE);
+test('analyze (mocked)', async t => {
+  moxios.install();
+  const p = createPerspective();
+  const promise = p.analyze('testing is for dummies');
+  return new Promise(resolve => {
+    moxios.wait(async () => {
+      const request = moxios.requests.mostRecent();
+      await request.respondWith({
+        response: DEFAULT_RESPONSE,
+        status: 200,
+      });
+      t.is(await promise, DEFAULT_RESPONSE);
+      resolve();
+    });
+    moxios.uninstall();
+  });
 });
 
 test('strips tags by default', t => {
