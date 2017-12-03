@@ -14,8 +14,13 @@ class Perspective {
     }
   }
   analyze(text, options) {
-    const resource = this.makeResource(text, options);
     return new Promise((resolve, reject) => {
+      let resource;
+      try {
+        resource = this.makeResource(text, options);
+      } catch (err) {
+        reject(err);
+      }
       axios.post(COMMENT_ANALYZER_URL, resource, {
         params: {key: this.options.apiKey},
       }).then(response => {
@@ -30,6 +35,12 @@ class Perspective {
     const doNotStore = opts.doNotStore == undefined ? true : opts.doNotStore;
     const processText = str => {
       const ret = stripHTML ? striptags(str) : str;
+      if (!ret) {
+        throw new Error('text is required');
+      }
+      if (!truncate && ret.length > MAX_LENGTH) {
+        throw new Error(`text must not be greater than ${MAX_LENGTH} characters in length`);
+      }
       return truncate ? ret.substr(0, MAX_LENGTH) : ret;
     };
     let resource = {};
