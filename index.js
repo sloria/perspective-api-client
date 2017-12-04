@@ -58,12 +58,13 @@ class Perspective {
     const stripHTML = opts.stripHTML == undefined ? true : opts.stripHTML;
     const truncate = opts.truncate == undefined ? false : opts.truncate;
     const doNotStore = opts.doNotStore == undefined ? true : opts.doNotStore;
+    const validate = opts.validate == undefined ? true : opts.validate;
     const processText = str => {
       const ret = stripHTML ? striptags(str) : str;
-      if (!ret) {
+      if (validate && !ret) {
         throw new TextEmptyError();
       }
-      if (!truncate && ret.length > MAX_LENGTH) {
+      if (validate && !truncate && ret.length > MAX_LENGTH) {
         throw new TextTooLongError();
       }
       return truncate ? ret.substr(0, MAX_LENGTH) : ret;

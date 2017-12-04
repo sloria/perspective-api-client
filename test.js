@@ -136,4 +136,17 @@ if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
     t.truthy(result);
     t.truthy(result.attributeScores.TOXICITY);
   });
+
+  // This test will fail if the max length isn't what we expect
+  test('integration:analyze with text too long', async t => {
+    const p = createPerspective();
+    const text = repeat('x', 3001);
+    const {response} = await t.throws(
+      p.analyze(text, {doNotStore: true, validate: false}),
+      Error
+    );
+    t.log('Expected error');
+    t.log(response.data);
+    t.regex(response.data.error.message, /exceeded limit \(3000\)/);
+  });
 }
