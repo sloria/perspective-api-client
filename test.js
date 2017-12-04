@@ -7,7 +7,7 @@ test('requires apiKey', t => {
   t.throws(() => new Perspective(), Error);
 });
 
-const DEFAULT_RESPONSE = {
+const MOCK_RESPONSE = {
   attributeScores: {
     TOXICITY: {
       spanScores: [
@@ -40,10 +40,10 @@ test('analyze (mocked)', async t => {
     moxios.wait(async () => {
       const request = moxios.requests.mostRecent();
       await request.respondWith({
-        response: DEFAULT_RESPONSE,
+        response: MOCK_RESPONSE,
         status: 200,
       });
-      t.is(await promise, DEFAULT_RESPONSE);
+      t.is(await promise, MOCK_RESPONSE);
       resolve();
     });
     moxios.uninstall();
@@ -52,44 +52,46 @@ test('analyze (mocked)', async t => {
 
 test('strips tags by default', t => {
   const p = createPerspective();
-  const resource = p.makeResource('<p>good test</p>');
-  t.is(resource.comment.text, 'good test');
+  const payload = p.getAnalyzeCommentPayload('<p>good test</p>');
+  t.is(payload.comment.text, 'good test');
 });
 
 test('stripHTML false', t => {
   const p = createPerspective();
-  const resource = p.makeResource('<p>good test</p>', {stripHTML: false});
-  t.is(resource.comment.text, '<p>good test</p>');
+  const payload = p.getAnalyzeCommentPayload('<p>good test</p>', {
+    stripHTML: false,
+  });
+  t.is(payload.comment.text, '<p>good test</p>');
 });
 
 test('doNotStore is true by default', t => {
   const p = createPerspective();
-  const resource = p.makeResource('good test');
-  t.true(resource.doNotStore);
+  const payload = p.getAnalyzeCommentPayload('good test');
+  t.true(payload.doNotStore);
 });
 
 test('truncate', t => {
   const p = createPerspective();
   // doesn't truncate by default
   const text = repeat('x', 3001);
-  t.throws(() => p.makeResource(text), Error);
-  const truncated = p.makeResource(text, {truncate: true});
+  t.throws(() => p.getAnalyzeCommentPayload(text), Error);
+  const truncated = p.getAnalyzeCommentPayload(text, {truncate: true});
   t.is(truncated.comment.text, repeat('x', 3000));
-  t.throws(() => p.makeResource(text, {truncate: false}), Error);
+  t.throws(() => p.getAnalyzeCommentPayload(text, {truncate: false}), Error);
 });
 
 test('analyze with attributes passed as an array', t => {
   const p = createPerspective();
-  const resource = p.makeResource('good test', {
+  const payload = p.getAnalyzeCommentPayload('good test', {
     attributes: ['unsubstantial', 'spam'],
   });
-  t.truthy(resource.requestedAttributes.UNSUBSTANTIAL);
-  t.truthy(resource.requestedAttributes.SPAM);
+  t.truthy(payload.requestedAttributes.UNSUBSTANTIAL);
+  t.truthy(payload.requestedAttributes.SPAM);
 });
 
 test('analyze with AnalyzeComment object passed', t => {
   const p = createPerspective();
-  const request = {
+  const requestPayload = {
     comment: {text: 'hooray for tests'},
     requestedAttributes: {
       UNSUBSTANTIAL: {},
@@ -98,15 +100,21 @@ test('analyze with AnalyzeComment object passed', t => {
     clientToken: 'test',
     doNotStore: true,
   };
-  const resource = p.makeResource(request);
-  t.deepEqual(resource, request);
+  const payload = p.getAnalyzeCommentPayload(requestPayload);
+  t.deepEqual(payload, requestPayload);
 });
 
 test('text is required', t => {
   const p = createPerspective();
-  const error = t.throws(() => p.makeResource(), /text must not be empty/);
+  const error = t.throws(
+    () => p.getAnalyzeCommentPayload(),
+    /text must not be empty/
+  );
   t.true(error instanceof TextEmptyError);
-  const error2 = t.throws(() => p.makeResource(''), /text must not be empty/);
+  const error2 = t.throws(
+    () => p.getAnalyzeCommentPayload(''),
+    /text must not be empty/
+  );
   t.true(error2 instanceof TextEmptyError);
 });
 
@@ -114,7 +122,7 @@ test('> 3000 characters in text is invalid', t => {
   const p = createPerspective();
   const text = repeat('x', 3001);
   // prettier-ignore
-  const error = t.throws(() => p.makeResource(text), /text must not be greater than 3000 characters in length/);
+  const error = t.throws(() => p.getAnalyzeCommentPayload(text), /text must not be greater than 3000 characters in length/);
   t.true(error instanceof TextTooLongError);
 });
 

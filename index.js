@@ -40,7 +40,7 @@ class Perspective {
     return new Promise((resolve, reject) => {
       let resource;
       try {
-        resource = this.makeResource(text, options);
+        resource = this.getAnalyzeCommentPayload(text, options);
       } catch (err) {
         reject(err);
       }
@@ -53,7 +53,7 @@ class Perspective {
         }, reject);
     });
   }
-  makeResource(text, options) {
+  getAnalyzeCommentPayload(text, options) {
     const opts = options || {};
     const stripHTML = opts.stripHTML == undefined ? true : opts.stripHTML;
     const truncate = opts.truncate == undefined ? false : opts.truncate;
