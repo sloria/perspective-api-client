@@ -1,10 +1,14 @@
 import test from 'ava';
-import moxios from 'moxios';
+import nock from 'nock';
 import repeat from 'lodash.repeat';
 import Perspective, {TextEmptyError, TextTooLongError} from '.';
 
-test('requires apiKey', t => {
-  t.throws(() => new Perspective(), Error);
+test.beforeEach(() => {
+  nock.disableNetConnect();
+});
+
+test.afterEach(() => {
+  nock.enableNetConnect();
 });
 
 const MOCK_RESPONSE = {
@@ -32,22 +36,36 @@ const MOCK_RESPONSE = {
 const createPerspective = () =>
   new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY || 'mock-key'});
 
+test('requires apiKey', t => {
+  t.throws(() => new Perspective(), Error);
+});
+
 test('analyze (mocked)', async t => {
-  moxios.install();
   const p = createPerspective();
-  const promise = p.analyze('testing is for dummies');
-  return new Promise(resolve => {
-    moxios.wait(async () => {
-      const request = moxios.requests.mostRecent();
-      await request.respondWith({
-        response: MOCK_RESPONSE,
-        status: 200,
-      });
-      t.is(await promise, MOCK_RESPONSE);
-      resolve();
+  // pass allowUnmocked: true so that integration tests will work
+  nock('https://commentanalyzer.googleapis.com', {allowUnmocked: true})
+    .filteringRequestBody(() => '*')
+    .post('/v1alpha1/comments:analyze', '*')
+    .query(true)
+    .reply(200, MOCK_RESPONSE);
+  const result = await p.analyze('testing is for dummies');
+  t.deepEqual(result, MOCK_RESPONSE);
+});
+
+test('analyze (mocked) handles errors from API', async t => {
+  const p = createPerspective();
+  // pass allowUnmocked: true so that integration tests will work
+  nock('https://commentanalyzer.googleapis.com', {allowUnmocked: true})
+    .filteringRequestBody(() => '*')
+    .post('/v1alpha1/comments:analyze', '*')
+    .query(true)
+    .reply(400, {
+      error: {
+        message: 'invalid!',
+      },
     });
-    moxios.uninstall();
-  });
+  const error = await t.throws(p.analyze('this will fail'), Error);
+  t.is(error.response.data.error.message, 'invalid!');
 });
 
 test('strips tags by default', t => {
@@ -128,6 +146,7 @@ test('> 3000 characters in text is invalid', t => {
 
 if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
   test('integration:analyze', async t => {
+    nock.enableNetConnect();
     const p = createPerspective();
     const result = await p.analyze('testing is for dummies', {
       doNotStore: true,
@@ -139,6 +158,7 @@ if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
 
   // This test will fail if the max length isn't what we expect
   test('integration:analyze with text too long', async t => {
+    nock.enableNetConnect();
     const p = createPerspective();
     const text = repeat('x', 3001);
     const {response} = await t.throws(
