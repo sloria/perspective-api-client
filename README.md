@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/sloria/perspective-api-client.svg?branch=master)](https://travis-ci.org/sloria/perspective-api-client)
 [![Greenkeeper badge](https://badges.greenkeeper.io/sloria/perspective-api-client.svg)](https://greenkeeper.io/)
 
-NodeJS client library for the [Perspective API](https://www.perspectiveapi.com/).
+Node.js client library for the [Perspective API](https://www.perspectiveapi.com/).
 
 ## Install
 
@@ -19,7 +19,7 @@ const Perspective = require('perspective-api-client');
 const perspective = new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY});
 
 (async () => {
-  const text = 'What kind of idiot name is foo? Sorry, I like your name.';
+  const text = 'you empty-headed animal food trough wiper!';
   const result = await perspective.analyze(text);
   console.log(JSON.stringify(result, null, 2));
 })();
@@ -29,15 +29,15 @@ const perspective = new Perspective({apiKey: process.env.PERSPECTIVE_API_KEY});
 //       "spanScores": [
 //         {
 //           "begin": 0,
-//           "end": 56,
+//           "end": 42,
 //           "score": {
-//             "value": 0.8728314,
+//             "value": 0.77587414,
 //             "type": "PROBABILITY"
 //           }
 //         }
 //       ],
 //       "summaryScore": {
-//         "value": 0.8728314,
+//         "value": 0.77587414,
 //         "type": "PROBABILITY"
 //       }
 //     }
@@ -55,37 +55,41 @@ The TOXICITY model is used by default. To specify additional models,
 
 ```js
 (async () => {
-  const text = 'What kind of idiot name is foo? Sorry, I like your name.';
-  const result = await perspective.analyze(text, {attributes: ['toxicity', 'unsubstantial']});
+  const text = 'fools!';
+  const result = await perspective.analyze(text, {attributes: ['unsubstantial', 'spam']});
   console.log(JSON.stringify(result, null, 2));
 })();
 // {
 //   "attributeScores": {
-//     "TOXICITY": {
-//         ...
-//       }
-//     },
 //     "UNSUBSTANTIAL": {
 //       "spanScores": [
 //         {
 //           "begin": 0,
-//           "end": 32,
+//           "end": 6,
 //           "score": {
-//             "value": 0.72937065,
-//             "type": "PROBABILITY"
-//           }
-//         },
-//         {
-//           "begin": 32,
-//           "end": 56,
-//           "score": {
-//             "value": 0.8579436,
+//             "value": 0.9592708,
 //             "type": "PROBABILITY"
 //           }
 //         }
 //       ],
 //       "summaryScore": {
-//         "value": 0.6332942,
+//         "value": 0.9592708,
+//         "type": "PROBABILITY"
+//       }
+//     },
+//     "SPAM": {
+//       "spanScores": [
+//         {
+//           "begin": 0,
+//           "end": 6,
+//           "score": {
+//             "value": 0.008744183,
+//             "type": "PROBABILITY"
+//           }
+//         }
+//       ],
+//       "summaryScore": {
+//         "value": 0.008744183,
 //         "type": "PROBABILITY"
 //       }
 //     }
@@ -103,10 +107,10 @@ object for more control over the request.
 
 ```js
 (async () => {
-  const text = 'What kind of idiot name is foo? Sorry, I like your name.';
+  const text = 'you empty-headed animal food trough wiper!';
   const result = await perspective.analyze({
     comment: {text},
-    requestedAttributes: {TOXICITY: {scoreThreshold: 0.7}}
+    requestedAttributes: {TOXICITY: {scoreThreshold: 0.7}},
   });
   console.log(JSON.stringify(result, null, 2));
 })();
@@ -116,15 +120,15 @@ object for more control over the request.
 //       "spanScores": [
 //         {
 //           "begin": 0,
-//           "end": 56,
+//           "end": 42,
 //           "score": {
-//             "value": 0.8728314,
+//             "value": 0.77587414,
 //             "type": "PROBABILITY"
 //           }
 //         }
 //       ],
 //       "summaryScore": {
-//         "value": 0.8728314,
+//         "value": 0.77587414,
 //         "type": "PROBABILITY"
 //       }
 //     }
@@ -194,7 +198,7 @@ Differences:
 
 - Returns full responses (rather than only returning summary scores)
 - Exposes all [AnalyzeComment](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-request) options
-- Supports all NodeJS LTS versions
+- Supports all Node.js LTS versions
 
 ## License
 
