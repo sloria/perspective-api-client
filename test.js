@@ -1,6 +1,6 @@
 import test from 'ava';
 import nock from 'nock';
-import repeat from 'lodash.repeat';
+import {repeat} from 'lodash';
 import Perspective, {TextEmptyError, TextTooLongError, ResponseError} from '.';
 
 test.beforeEach(() => {

@@ -1,7 +1,7 @@
 'use strict';
 const axios = require('axios');
 const striptags = require('striptags');
-const merge = require('lodash.merge');
+const _ = require('lodash');
 
 const COMMENT_ANALYZER_URL =
   'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
@@ -59,7 +59,7 @@ class Perspective {
         .then(response => {
           resolve(response.data);
         }).catch(err => {
-          const message = err.response.data.error.message || err.message;
+          const message = _.get(err, 'response.data.error.message', err.message);
           reject(new ResponseError(message, err.response));
         });
     });
@@ -99,7 +99,7 @@ class Perspective {
         attributes[each.toUpperCase()] = {};
       });
     }
-    return merge({}, resource, {
+    return _.merge({}, resource, {
       requestedAttributes: attributes,
       doNotStore,
     });
