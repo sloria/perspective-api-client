@@ -1,7 +1,7 @@
 import test from 'ava';
 import nock from 'nock';
 import repeat from 'lodash.repeat';
-import Perspective, {TextEmptyError, TextTooLongError} from '.';
+import Perspective, {TextEmptyError, TextTooLongError, ResponseError} from '.';
 
 test.beforeEach(() => {
   nock.disableNetConnect();
@@ -64,8 +64,24 @@ test('analyze (mocked) handles errors from API', async t => {
         message: 'invalid!',
       },
     });
-  const error = await t.throws(p.analyze('this will fail'), Error);
+  const error = await t.throws(p.analyze('this will fail'), ResponseError);
+  t.is(error.message, 'invalid!');
   t.is(error.response.data.error.message, 'invalid!');
+});
+
+test('analyze (mocked) handles errors with no message', async t => {
+  const p = createPerspective();
+  // pass allowUnmocked: true so that integration tests will work
+  nock('https://commentanalyzer.googleapis.com', {allowUnmocked: true})
+    .filteringRequestBody(() => '*')
+    .post('/v1alpha1/comments:analyze', '*')
+    .query(true)
+    .reply(400, {
+      error: {code: 400},
+    });
+  const error = await t.throws(p.analyze('this will fail'), ResponseError);
+  t.regex(error.message, /Request failed with status code 400/);
+  t.is(error.response.data.error.code, 400);
 });
 
 test('strips tags by default', t => {

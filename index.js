@@ -29,6 +29,14 @@ class TextTooLongError extends PerspectiveAPIClientError {
   }
 }
 
+class ResponseError extends PerspectiveAPIClientError {
+  constructor(message, response) {
+    super(message);
+    this.response = response;
+    this.name = 'ResponseError';
+  }
+}
+
 class Perspective {
   constructor(options) {
     this.options = options || {};
@@ -50,7 +58,10 @@ class Perspective {
         })
         .then(response => {
           resolve(response.data);
-        }, reject);
+        }).catch(err => {
+          const message = err.response.data.error.message || err.message;
+          reject(new ResponseError(message, err.response));
+        });
     });
   }
   getAnalyzeCommentPayload(text, options) {
@@ -98,4 +109,5 @@ class Perspective {
 Perspective.PerspectiveAPIClientError = PerspectiveAPIClientError;
 Perspective.TextEmptyError = TextEmptyError;
 Perspective.TextTooLongError = TextTooLongError;
+Perspective.ResponseError = ResponseError;
 module.exports = Perspective;
