@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0 (2017-12-08)
+
+- A `ResponseError` is thrown if the API returns an error.
+
 ## 2.0.0 (2017-12-03)
 
 - Directly call to comment analyzer API rather than using Google's
