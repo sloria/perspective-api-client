@@ -44,6 +44,7 @@ class Perspective {
       throw new Error('Must provide options.apiKey');
     }
   }
+
   analyze(text, options) {
     return new Promise((resolve, reject) => {
       let resource;
@@ -64,6 +65,7 @@ class Perspective {
         });
     });
   }
+
   getAnalyzeCommentPayload(text, options) {
     const opts = options || {};
     const stripHTML = opts.stripHTML == undefined ? true : opts.stripHTML;
