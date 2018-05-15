@@ -10,7 +10,7 @@
     "url": "stevenloria.com"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "scripts": {
     "test": "npm run lint && ava",
@@ -35,7 +35,7 @@
     "local-repl": "^4.0.0",
     "nock": "^9.1.4",
     "np": "^2.17.0",
-    "xo": "^0.20.3"
+    "xo": "^0.21.0"
   },
   "xo": {
     "space": true,
