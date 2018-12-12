@@ -50,8 +50,8 @@ class Perspective {
       let resource;
       try {
         resource = this.getAnalyzeCommentPayload(text, options);
-      } catch (err) {
-        reject(err);
+      } catch (error) {
+        reject(error);
       }
       axios
         .post(COMMENT_ANALYZER_URL, resource, {
@@ -59,9 +59,9 @@ class Perspective {
         })
         .then(response => {
           resolve(response.data);
-        }).catch(err => {
-          const message = _.get(err, 'response.data.error.message', err.message);
-          reject(new ResponseError(message, err.response));
+        }).catch(error => {
+          const message = _.get(error, 'response.data.error.message', error.message);
+          reject(new ResponseError(message, error.response));
         });
     });
   }
