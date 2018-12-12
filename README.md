@@ -180,7 +180,7 @@ Whether to strip HTML tags from the text.
 Type: `Boolean`
 Default: `false`
 
-If `true`, truncate text to the first 3000 characters (max length
+If `true`, truncate text to the first 20480 characters (max length
     allowed by the Perspective API).
 
 ## FAQ

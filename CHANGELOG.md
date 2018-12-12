@@ -1,5 +1,10 @@
 # Changelog
 
+### 3.1.0 (2018-12-11)
+
+- Increase max text length to 20480 characters.
+- Drop support for node 4.
+
 ## 3.0.0 (2017-12-08)
 
 - A `ResponseError` is thrown if the API returns an error.
