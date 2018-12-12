@@ -5,7 +5,7 @@ const _ = require('lodash');
 
 const COMMENT_ANALYZER_URL =
   'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
-const MAX_LENGTH = 3000;
+const MAX_LENGTH = 20480;
 
 class PerspectiveAPIClientError extends Error {
   constructor(message) {

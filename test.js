@@ -107,10 +107,10 @@ test('doNotStore is true by default', t => {
 test('truncate', t => {
   const p = createPerspective();
   // doesn't truncate by default
-  const text = repeat('x', 3001);
+  const text = repeat('x', 20481);
   t.throws(() => p.getAnalyzeCommentPayload(text), Error);
   const truncated = p.getAnalyzeCommentPayload(text, {truncate: true});
-  t.is(truncated.comment.text, repeat('x', 3000));
+  t.is(truncated.comment.text, repeat('x', 20480));
   t.throws(() => p.getAnalyzeCommentPayload(text, {truncate: false}), Error);
 });
 
@@ -154,9 +154,9 @@ test('text is required', t => {
 
 test('> 3000 characters in text is invalid', t => {
   const p = createPerspective();
-  const text = repeat('x', 3001);
+  const text = repeat('x', 20481);
   // prettier-ignore
-  const error = t.throws(() => p.getAnalyzeCommentPayload(text), /text must not be greater than 3000 characters in length/);
+  const error = t.throws(() => p.getAnalyzeCommentPayload(text), /text must not be greater than/);
   t.true(error instanceof TextTooLongError);
 });
 
@@ -176,13 +176,13 @@ if (process.env.PERSPECTIVE_API_KEY && process.env.TEST_INTEGRATION) {
   test('integration:analyze with text too long', async t => {
     nock.enableNetConnect();
     const p = createPerspective();
-    const text = repeat('x', 3001);
+    const text = repeat('x', 20481);
     const {response} = await t.throws(
       p.analyze(text, {doNotStore: true, validate: false}),
       Error
     );
     t.log('Expected error');
     t.log(response.data);
-    t.regex(response.data.error.message, /exceeded limit \(3000\)/);
+    t.regex(response.data.error.message, /exceeded limit/);
   });
 }
