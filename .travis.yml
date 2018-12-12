@@ -7,17 +7,3 @@ node_js:
 - '8'
 - '6'
 sudo: false
-
-jobs:
-  include:
-    - stage: npm release
-      if: tag IS present
-      node_js: "8"
-      script: echo "Deploying to npm ..."
-      deploy:
-        provider: npm
-        email: sloria1@gmail.com
-        api_key:
-          secure: J95QV+oNd0y1imQFq1satzSoOTDoJd/PWuESVHSa/UvYcOZmQ++i1CRRGRJJkWADvmNSmMraVzGivozVQMOC3Kr/rqquM1sM4GpGon6B13P/OGLM8EV9YtjDmBj01SQyM8d+Xng4p58dX3gnqhPhuIxgoBkI2fgPun0bpym30/+JgmTDRpyycLkRzz+JeOA5e8oq/HyjIloIhSbQDAtIderdXZsA++LAt9mNWfLOTfryeKvkX6qWR/HKamNvpNrSAqNJCDSSdUPpAWBtpZRXi8J8YQd2Zc9gaNDt2Q0g8VLPKGdQQ93rfEEhK/gQhXriTISBZdGFMpNb5ezvOdw7kYtSm8GFaELh/IZ9Ov5OysLJ226imU6YY5uMT8PmDg4iZltMdOrnFfmbphxnRw5gKXLEofGXJHWtHMT4+kLrrR0qEZw1EAQSvLpFTtjwnCCLI6Pvv1/bGp9oOp1G1+QUvsnqmkMrWuc+ZvD22oz4/Zm42DL1uep7rTPl1aapHHOnRcZQIV0bb0gyAoo6qQXu5M/+3UmlQfU4HdfJRTpv7asA1BL9y2ew4lawemynTYhmT+Cnxc9G3ZTpGPEjnu/5KT47mXvUeI3W41riwgCWIqqZ64SdviK7PhzopEGJ3sd6paDhKMWgva2I+bMSk+YTggGJP2AVhrS+pySxX2uvFSg=
-        on:
-          tags: true

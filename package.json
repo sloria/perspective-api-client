@@ -15,7 +15,7 @@
   "scripts": {
     "test": "npm run lint && ava",
     "lint": "xo",
-    "release": "np --no-publish",
+    "release": "np",
     "repl": "local-repl"
   },
   "files": [
