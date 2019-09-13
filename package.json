@@ -31,7 +31,7 @@
     "striptags": "^3.1.1"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
+    "ava": "^2.3.0",
     "local-repl": "^4.0.0",
     "nock": "^10.0.6",
     "np": "^5.0.0",
