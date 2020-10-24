@@ -26,7 +26,7 @@
     "perspective-api"
   ],
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.0",
     "lodash": "^4.17.4",
     "striptags": "^3.1.1"
   },
