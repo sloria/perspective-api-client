@@ -196,7 +196,7 @@ Differences:
 
 
 - Returns full responses (rather than only returning summary scores)
-- Exposes all [AnalyzeComment](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-request) options
+- Exposes all [AnalyzeComment] options
 - Supports all Node.js LTS versions
 
 ## License
